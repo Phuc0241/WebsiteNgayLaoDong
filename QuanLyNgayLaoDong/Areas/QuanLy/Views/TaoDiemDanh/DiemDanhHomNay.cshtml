@@ -1,0 +1,42 @@
+﻿@{
+        ViewBag.Title = "Tạo Mã Điểm Danh Hôm Nay";
+        Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+        var ma = TempData["MaMoi"]?.ToString();
+        var error = TempData["Error"]?.ToString();
+        var today = ViewBag.Today as DateTime? ?? DateTime.Today;
+        var danhSachDot = ViewBag.DanhSachDot as List<QuanLyNgayLaoDong.Models.TaoDotNgayLaoDong>;
+    }
+
+    <h2 class="mb-4">Tạo Mã Điểm Danh</h2>
+
+    @if (!string.IsNullOrEmpty(ma))
+    {
+        <div class="alert alert-success">Mã điểm danh hôm nay là: <strong>@ma</strong></div>
+    }
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    @foreach (var dot in danhSachDot)
+    {
+        if (dot.NgayLaoDong.HasValue && dot.NgayLaoDong.Value.Date == today)
+        {
+            <div class="d-flex align-items-center mb-2">
+                <p class="mb-0 me-3"><strong>Ca lao động:</strong> @dot.MoTa - @dot.NgayLaoDong.Value.ToShortDateString()</p>
+                @using (Html.BeginForm("TaoMaDiemDanh", "TaoDiemDanh", FormMethod.Post, new { area = "QuanLy", @class = "d-inline" }))
+                {
+                    @Html.Hidden("DotLaoDongId", dot.ID)
+                    <button type="submit" class="btn btn-primary btn-sm">Tạo mã điểm danh</button>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex align-items-center mb-2">
+                <p class="mb-0"><strong>@dot.MoTa:</strong> Chưa tới ngày lao động (@dot.NgayLaoDong?.ToShortDateString())</p>
+            </div>
+        }
+    }
+
+    <hr />

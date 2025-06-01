@@ -1,0 +1,183 @@
+﻿@model List<QuanLyNgayLaoDong.Areas.LopTruong.ViewModel.PhieuDangKyLopTruongViewModel>
+
+@{
+    ViewBag.Title = "Điểm danh lao động";
+    Layout = "~/Areas/LopTruong/Views/Shared/_LayoutLopTruong1.cshtml";
+    var today = DateTime.Today;
+    var status = TempData["DiemDanhStatus"]?.ToString();
+    var matchedId = TempData["DiemDanhId"]?.ToString();
+    int pageSize = 5;
+    int currentPage = Convert.ToInt32(Request.QueryString["page"] ?? "1");
+    int totalItems = Model.Count;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+    var pagedModel = Model.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+}
+
+<style>
+    .custom-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #0056b3;
+        text-align: center;
+        margin-bottom: 24px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: 1.5px;
+        position: relative;
+    }
+
+        .custom-title::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: #007bff;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+    .table th, .table td {
+        vertical-align: middle !important;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .pagination a {
+            color: #007bff;
+            margin: 0 5px;
+            padding: 8px 12px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+            .pagination a.active {
+                background-color: #007bff;
+                color: white;
+                border: 1px solid #007bff;
+            }
+
+            .pagination a:hover {
+                background-color: #0056b3;
+                color: white;
+            }
+
+    .d-none {
+        display: none;
+    }
+
+    .mt-2 {
+        margin-top: 10px;
+    }
+
+    .form-control {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+</style>
+
+<h2 class="custom-title">Danh sách phiếu đăng ký lao động</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th>STT</th>
+            <th>Thời gian đăng ký</th>
+            <th>Lao động theo lớp</th>
+            <th>Lao động cá nhân</th>
+            <th>Điểm danh</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int index = (currentPage - 1) * pageSize + 1;
+        }
+        @foreach (var item in pagedModel)
+        {
+            var isToday = item.NgayLaoDong?.Date == today;
+            <tr>
+                <td>@index</td>
+                <td>@item.ThoiGian</td>
+                <td>@(item.LaoDongTheoLop == true ? "Có" : "Không")</td>
+                <td>@(item.LaoDongCaNhan == true ? "Có" : "Không")</td>
+                <td>
+                    @if (isToday)
+                    {
+                        if (item.DaDiemDanh)
+                        {
+                            <span class="text-success font-weight-bold">Đã điểm danh ✅</span>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" onclick="toggleForm(@item.Id)">Điểm danh</button>
+                            <div id="form-@item.Id" class="mt-2 d-none">
+                                @using (Html.BeginForm("NhapMa", "TrangChuLopTruong", FormMethod.Post, new { area = "LopTruong" }))
+                                {
+                                    @Html.Hidden("id", item.Id)
+                                    <input type="text" name="maDiemDanh" placeholder="Nhập mã điểm danh" class="form-control mb-2" />
+                                    <button type="submit" class="btn btn-success">Xác nhận</button>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Chưa tới ngày lao động</span>
+                    }
+                </td>
+            </tr>
+            index++;
+        }
+    </tbody>
+</table>
+
+<!-- Phân trang -->
+@if (totalPages > 1)
+{
+    <div class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            var link = Url.Action("DiemDanh", new { page = i });
+            <a href="@link" class="@(i == currentPage ? "active" : "")">@i</a>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function toggleForm(id) {
+            const form = document.getElementById('form-' + id);
+            if (form) {
+                form.classList.toggle('d-none');
+            }
+        }
+
+        window.onload = function () {
+            const status = '@status';
+            const matchedId = '@matchedId';
+
+            if (status === 'success') {
+                alert("✅ Điểm danh phiếu ID " + matchedId + " thành công!");
+            } else if (status === 'wrong') {
+                alert("❌ Sai mã điểm danh.");
+            } else if (status === 'empty') {
+                alert("⚠️ Vui lòng nhập mã điểm danh.");
+            }
+        }
+    </script>
+}

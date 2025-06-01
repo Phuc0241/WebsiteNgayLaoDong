@@ -1,0 +1,61 @@
+﻿body {
+    background-color: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
+
+.container.mt-4 {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2.text-center.mb-4 {
+    color: #007bff;
+    font-weight: 700;
+}
+
+.table {
+    background-color: #ffffff;
+}
+
+.thead-dark th {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+}
+
+.alert {
+    border-radius: 4px;
+}
+
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+    .container.mt-4 {
+        padding: 15px;
+    }
+
+    .table th, .table td {
+        font-size: 0.9rem;
+    }
+}

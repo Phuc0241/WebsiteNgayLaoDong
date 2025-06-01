@@ -1,0 +1,41 @@
+﻿@model List<QuanLyNgayLaoDong.Areas.QuanLy.ViewModel.DiemDanhXacNhanViewModel>
+
+@{
+    ViewBag.Title = "Xác nhận hoàn thành";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+    var ngay = ViewBag.Ngay as DateTime?;
+}
+
+<h2>Xác nhận sinh viên đã hoàn thành ngày @ngay?.ToString("dd/MM/yyyy")</h2>
+
+@using (Html.BeginForm("XacNhanHoanThanh", "TaoDiemDanh", FormMethod.Post))
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th>MSSV</th>
+                <th>Họ tên</th>
+                <th>Lớp</th>
+                <th>Thời gian điểm danh</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(m => m[i].MSSV)
+                        @Html.HiddenFor(m => m[i].DotLaoDongId)
+                        @Html.CheckBoxFor(m => m[i].DuocXacNhan)
+                    </td>
+                    <td>@Model[i].MSSV</td>
+                    <td>@Model[i].HoTen</td>
+                    <td>@Model[i].Lop</td>
+                    <td>@Model[i].ThoiGianDiemDanh.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-success">Xác nhận hoàn thành</button>
+}

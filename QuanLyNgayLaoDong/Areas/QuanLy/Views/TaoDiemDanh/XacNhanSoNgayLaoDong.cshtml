@@ -1,0 +1,49 @@
+﻿@model List<QuanLyNgayLaoDong.Areas.QuanLy.ViewModel.XacNhanSoNgayLaoDongViewModel>
+
+@{
+    ViewBag.Title = "\"Xác nhận số ngày lao động";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+}
+
+<h2>Xác nhận số ngày lao động cho sinh viên</h2>
+
+@using (Html.BeginForm("LuuSoNgayLaoDong", "TaoDiemDanh", FormMethod.Post))
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>MSSV</th>
+                <th>Họ tên</th>
+                <th>Lớp</th>
+                <th>Giá trị mặc định</th>
+                <th>Số ngày xác nhận</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => m[i].MSSV)
+                        @Html.HiddenFor(m => m[i].MSSV)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => m[i].HoTen)
+                        @Html.HiddenFor(m => m[i].HoTen)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => m[i].Lop)
+                        @Html.HiddenFor(m => m[i].Lop)
+                    </td>
+                    <td>@Model[i].GiaTriMacDinh</td>
+                    <td>
+                        @Html.TextBoxFor(m => m[i].SoNgayXacNhan, new { @class = "form-control", type = "number", min = "0" })
+                        @Html.HiddenFor(m => m[i].DotLaoDongId)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Lưu số ngày</button>
+}

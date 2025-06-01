@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/trangchu/CSS/SinhVien.css" rel="stylesheet" />
+    <link href="~/Content/sinhvien/CSS/_LayoutSinhVien1.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="~/Areas/Admin/Javascript/AdminshareJavaScript.js"></script>
+    <link rel="stylesheet" href="@Url.Content("~/Content/Admin/css/layout.css")" />
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-content">
+            <a href="@Url.Action("Index", "TrangChu", new { area = "SinhVien" })">
+                <img src="~/Content/trangchu/images/imageLayout/LogoTruong.png" alt="Logo" class="logo" />
+            </a>
+            <div class="nav-content-text">Sinh Viên</div>
+            <div class="user-menu" id="userMenu" style="color: black">
+                @{ Html.RenderAction("ThongTinDangNhap", "InfoLayout", new { area = "SinhVien" }); }
+                <i class="fa fa-caret-down"></i>
+                <ul class="dropdown-menu" id="dropdownMenu">
+                    <li><a class="a-color" href="@Url.Action("TrangThongTinSinhVien", "TrangChu")">Thông tin cá nhân</a></li>
+                    <li><a class="a-color" href="javascript:void(0);" onclick="openModal()">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Nút toggle sidebar -->
+    <button style="height:5px;width:5px" class="menu-toggle" id="menuToggleBtn" aria-label="Toggle Menu">
+        <i style="height:1px;width:1px" class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="custom-sidebar" id="sidebarMenu" title="Menu">
+        <a href="@Url.Action("Index", "TrangChu", new { area = "SinhVien" })">
+            <i class="fa fa-home"></i> <span>Trang chủ</span>
+        </a>
+        <a href="@Url.Action("PhieuDangKy", "TrangChu")">
+            <i class="fa-regular fa-calendar-plus"></i> <span>Đăng Ký Lao Động</span>
+        </a>
+        <a href="@Url.Action("ThongKe", "TrangChu")">
+            <i class="fa fa-bar-chart"></i> <span>Thống kê</span>
+        </a>
+        <a href="@Url.Action("LichLaoDong", "TrangChu")">
+            <i class="fa fa-calendar"></i> <span>Lịch Lao Động</span>
+        </a>
+        <a href="@Url.Action("DiemDanh", "TrangChu")">
+            <i class="fa fa-check-circle"></i> <span>Điểm danh lao động</span>
+        </a>
+        <a href="@Url.Action("ThongBao", "TrangChu")">
+            <i class="fas fa-bell"></i> <span>Thông báo</span>
+        </a>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="custom-content" id="mainContent">
+        @RenderBody()
+    </div>
+
+    <!-- Modal đăng xuất -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-text">
+                <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                <div class="modal-buttons">
+                    <button class="btn-xoa"
+                            onclick="window.location.href='@Url.Action("Login", "Login", new { area = "" })'">
+                        Có
+                    </button>
+                    <button class="btn-huy" onclick="closeModal()">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('menuToggleBtn');
+        const sidebar = document.getElementById('sidebarMenu');
+        const mainContent = document.getElementById('mainContent');
+        const userMenu = document.getElementById('userMenu');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const modal = document.getElementById('confirmationModal');
+
+        // Toggle sidebar mở rộng/thu gọn khi bấm nút
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+            mainContent.classList.toggle('sidebar-expanded');
+        });
+
+        // Khi hover vào sidebar mở rộng, hover ra thu gọn (nếu không bấm toggle)
+        sidebar.addEventListener('mouseenter', () => {
+            if (!sidebar.classList.contains('expanded')) {
+                sidebar.classList.add('expanded');
+                mainContent.classList.add('sidebar-expanded');
+            }
+        });
+        sidebar.addEventListener('mouseleave', () => {
+            if (toggleBtn && !toggleBtn.classList.contains('active')) {
+                // Nếu toggle không active thì thu nhỏ lại
+                sidebar.classList.remove('expanded');
+                mainContent.classList.remove('sidebar-expanded');
+            }
+        });
+
+        // Chuyển trạng thái toggle active khi nhấn nút
+        toggleBtn.addEventListener('click', () => {
+            toggleBtn.classList.toggle('active');
+        });
+
+        // Hiển thị dropdown menu người dùng
+        userMenu.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // Ẩn dropdown khi click ra ngoài
+        window.addEventListener('click', (e) => {
+            if (!userMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
+        // Mở modal đăng xuất
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+        // Đóng modal đăng xuất
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Đóng modal khi click ngoài content modal
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        };
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

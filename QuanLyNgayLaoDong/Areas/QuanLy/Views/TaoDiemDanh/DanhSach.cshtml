@@ -1,0 +1,40 @@
+﻿@model List<QuanLyNgayLaoDong.Models.SinhVien>
+
+@{
+    ViewBag.Title = "Danh sách điểm danh";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+}
+
+<h2>Danh sách sinh viên đã điểm danh</h2>
+
+<form method="get" action="@Url.Action("DanhSach", "TaoDiemDanh")">
+    <div class="form-group">
+        <label for="ngay">Chọn ngày:</label>
+        <input type="date" name="ngay" class="form-control" />
+    </div>
+    @*<input type="hidden" name="ma" value="@Request.Query["ma"]" />*@
+    <input type="hidden" name="ma" value="@Request["ma"]" />
+
+    <button type="submit" class="btn btn-primary">Lọc</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>MSSV</th>
+            <th>Họ tên</th>
+            <th>Lớp</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sv in Model)
+        {
+            <tr>
+                <td>@sv.MSSV</td>
+                <td>@sv.hoten</td>
+                <td>@sv.Lop.ten_lop</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

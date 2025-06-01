@@ -1,0 +1,403 @@
+﻿@model List<QuanLyNgayLaoDong.Models.SinhVien>
+
+@{
+    ViewBag.Title = "Danh sách sinh viên";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link href="~/Areas/Admin/Css/QuanLySinhVien.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">QUẢN LÝ DANH SÁCH SINH VIÊN</h2>
+
+    <!-- Alerts -->
+    @if (TempData["Message"] != null)
+    {
+        <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="mb-3 d-flex justify-content-end">
+        <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#themSinhVienModal">
+            <i class="fas fa-plus"></i> Thêm sinh viên
+        </button>
+        <button class="btn btn-success" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </button>
+    </div>
+
+    <!-- Student Table -->
+    <table class="table table-bordered table-striped table-hover" id="sinhVienTable">
+        <thead class="thead-dark">
+            <tr>
+                <th>STT</th>
+                <th>MSSV</th>
+                <th>Họ tên</th>
+                <th>Giới tính</th>
+                <th>Quê quán</th>
+                <th>SĐT</th>
+                <th>Email</th>
+                <th>Lớp</th>
+                <th>Khoa</th>
+                <th>Tác vụ</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            @{
+                int stt = ((int)ViewBag.CurrentPage - 1) * (int)ViewBag.PageSize + 1;
+                foreach (var item in Model)
+                {
+                    var ngaySinh = item.ngaysinh.HasValue ? item.ngaysinh.Value.ToString("dd-MM-yyyy") : "";
+                    <tr data-id="@item.MSSV" data-ngaysinh="@ngaySinh" data-lop-id="@item.lop_id" data-email="@item.email">
+                        <td>@stt</td>
+                        <td data-mssv="@item.MSSV">@item.MSSV</td>
+                        <td data-hoten="@item.hoten">@item.hoten</td>
+                        <td data-gioitinh="@item.gioitinh">@(item.gioitinh ?? "Chưa xác định")</td>
+                        <td data-quequan="@item.quequan">@(item.quequan ?? "Chưa xác định")</td>
+                        <td data-sdt="@item.SDT">@(item.SDT ?? "Chưa xác định")</td>
+                        <td data-email="@item.email">@(item.email ?? "Chưa xác định")</td>
+                        <td data-lop="@(item.Lop?.ten_lop)">@(item.Lop?.ten_lop ?? "Chưa xác định")</td>
+                        <td data-khoa="@(item.Lop?.Khoa?.ten_khoa)">@(item.Lop?.Khoa?.ten_khoa ?? "Chưa xác định")</td>
+                        <td class="text-center">
+                            <button class="btn btn-info btn-sm" onclick="viewDetails(@item.MSSV)">
+                                <i class="fas fa-eye"></i> Chi tiết
+                            </button>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#suaSinhVienModal" onclick="fillEditForm(@item.MSSV)">
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#xoaSinhVienModal" onclick="setDeleteId(@item.MSSV)">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>
+                    stt++;
+                }
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("TrangChuSinhVien", new { page = ViewBag.CurrentPage - 1 })" aria-label="Previous">
+                    <span aria-hidden="true">«</span>
+                </a>
+            </li>
+
+            <!-- Numeric Buttons -->
+            @{
+                int totalPages = ViewBag.TotalPages;
+                int currentPage = ViewBag.CurrentPage;
+                int startPage = Math.Max(1, currentPage - 2);
+                int endPage = Math.Min(totalPages, startPage + 4);
+
+                if (endPage - startPage < 4)
+                {
+                    startPage = Math.Max(1, endPage - 4);
+                }
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("TrangChuSinhVien", new { page = i })">@i</a>
+                    </li>
+                }
+            }
+
+            <!-- Next Button -->
+            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("TrangChuSinhVien", new { page = ViewBag.CurrentPage + 1 })" aria-label="Next">
+                    <span aria-hidden="true">»</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Modal Thêm Sinh Viên -->
+    <div class="modal fade" id="themSinhVienModal" tabindex="-1" aria-labelledby="themSinhVienModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="@Url.Action("ThemSinhVien", "QuanLySinhVien", new { area = "Admin" })" method="post" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="themSinhVienModalLabel">Thêm Sinh Viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">MSSV</label>
+                                <input type="number" name="MSSV" class="form-control" required />
+                                <div class="invalid-feedback">Vui lòng nhập MSSV.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Họ tên</label>
+                                <input type="text" name="hoten" class="form-control" required />
+                                <div class="invalid-feedback">Vui lòng nhập họ tên.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày sinh</label>
+                                <input type="date" name="ngaysinh" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Giới tính</label>
+                                <select name="gioitinh" class="form-select">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Quê quán</label>
+                                <input type="text" name="quequan" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">SĐT</label>
+                                <input type="tel" name="SDT" id="addSDT" class="form-control" pattern="[0-9]{10}" />
+                                <div class="invalid-feedback">SĐT phải có 10 chữ số và chưa được sử dụng.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" id="addEmail" class="form-control" />
+                                <div class="invalid-feedback">Email không hợp lệ hoặc đã được sử dụng.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Lớp</label>
+                                <select name="lop_id" class="form-select" required>
+                                    <option value="">Chọn lớp</option>
+                                    @foreach (var lop in (SelectList)ViewBag.LopList)
+                                    {
+                                        <option value="@lop.Value">@lop.Text</option>
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn lớp.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sửa Sinh Viên -->
+    <div class="modal fade" id="suaSinhVienModal" tabindex="-1" aria-labelledby="suaSinhVienModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="@Url.Action("SuaSinhVien", "QuanLySinhVien", new { area = "Admin" })" method="post" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="MSSV" id="editMSSV" />
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary fw-bold w-100 text-center" id="suaSinhVienModalLabel">Sửa Sinh Viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="editHoten" class="form-label">Họ tên</label>
+                                <input type="text" name="hoten" id="editHoten" class="form-control" required />
+                                <div class="invalid-feedback">Vui lòng nhập họ tên.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editNgaySinh" class="form-label">Ngày sinh</label>
+                                <input type="date" name="ngaysinh" id="editNgaySinh" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editGioiTinh" class="form-label">Giới tính</label>
+                                <select name="gioitinh" id="editGioiTinh" class="form-select">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editQueQuan" class="form-label">Quê quán</label>
+                                <input type="text" name="quequan" id="editQueQuan" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editSDT" class="form-label">SĐT</label>
+                                <input type="tel" name="SDT" id="editSDT" class="form-control" pattern="[0-9]{10}" />
+                                <div class="invalid-feedback">SĐT phải có 10 chữ số và chưa được sử dụng.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" name="email" id="editEmail" class="form-control" />
+                                <div class="invalid-feedback">Email không hợp lệ hoặc đã được sử dụng.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editLopId" class="form-label">Lớp</label>
+                                <select name="lop_id" id="editLopId" class="form-select" required>
+                                    <option value="">Chọn lớp</option>
+                                    @foreach (var lop in (SelectList)ViewBag.LopList)
+                                    {
+                                        <option value="@lop.Value">@lop.Text</option>
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn lớp.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xóa Sinh Viên -->
+    <div class="modal fade" id="xoaSinhVienModal" tabindex="-1" aria-labelledby="xoaSinhVienModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="@Url.Action("XoaSinhVienConfirmed", "QuanLySinhVien", new { area = "Admin" })" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteMSSV" />
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger fw-bold w-100 text-center" id="xoaSinhVienModalLabel">Xác Nhận Xóa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center">Bạn có chắc chắn muốn xóa sinh viên này?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chi Tiết Sinh Viên -->
+    <div class="modal fade" id="chiTietSinhVienModal" tabindex="-1" aria-labelledby="chiTietSinhVienModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary fw-bold w-100 text-center" id="chiTietSinhVienModalLabel">Chi Tiết Sinh Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">MSSV:</label>
+                            <p id="detailMSSV"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Họ tên:</label>
+                            <p id="detailHoten"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày sinh:</label>
+                            <p id="detailNgaySinh"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giới tính:</label>
+                            <p id="detailGioiTinh"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Quê quán:</label>
+                            <p id="detailQueQuan"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">SĐT:</label>
+                            <p id="detailSDT"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Email:</label>
+                            <p id="detailEmail"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Lớp:</label>
+                            <p id="detailLop"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Khoa:</label>
+                            <p id="detailKhoa"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    function viewDetails(mssv) {
+        var row = $(`tr[data-id="${mssv}"]`);
+        $('#detailMSSV').text(row.find('[data-mssv]').data('mssv'));
+        $('#detailHoten').text(row.find('[data-hoten]').data('hoten'));
+        $('#detailNgaySinh').text(row.find('[data-ngaysinh]').data('ngaysinh'));
+        $('#detailGioiTinh').text(row.find('[data-gioitinh]').data('gioitinh') || 'Chưa xác định');
+        $('#detailQueQuan').text(row.find('[data-quequan]').data('quequan') || 'Chưa xác định');
+        $('#detailSDT').text(row.find('[data-sdt]').data('sdt') || 'Chưa xác định');
+        $('#detailEmail').text(row.find('[data-email]').data('email') || 'Chưa xác định');
+        $('#detailLop').text(row.find('[data-lop]').data('lop') || 'Chưa xác định');
+        $('#detailKhoa').text(row.find('[data-khoa]').data('khoa') || 'Chưa xác định');
+        $('#chiTietSinhVienModal').modal('show');
+    }
+
+    function fillEditForm(mssv) {
+        var row = $(`tr[data-id="${mssv}"]`);
+        $('#editMSSV').val(mssv);
+        $('#editHoten').val(row.find('[data-hoten]').data('hoten'));
+        $('#editNgaySinh').val(row.find('[data-ngaysinh]').data('ngaysinh') ? new Date(row.find('[data-ngaysinh]').data('ngaysinh').split('-').reverse().join('-')).toISOString().split('T')[0] : '');
+        $('#editGioiTinh').val(row.find('[data-gioitinh]').data('gioitinh'));
+        $('#editQueQuan').val(row.find('[data-quequan]').data('quequan'));
+        $('#editSDT').val(row.find('[data-sdt]').data('sdt'));
+        $('#editEmail').val(row.find('[data-email]').data('email'));
+        $('#editLopId').val(row.data('lop-id'));
+    }
+
+    function setDeleteId(mssv) {
+        $('#deleteMSSV').val(mssv);
+    }
+
+    function exportToExcel() {
+        var table = document.getElementById('sinhVienTable');
+        var ws = XLSX.utils.table_to_sheet(table);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'SinhVien');
+        XLSX.write_file(wb, 'DanhSachSinhVien.xlsx');
+    }
+
+    // Client-side validation
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

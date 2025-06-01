@@ -1,0 +1,70 @@
+﻿@model List<QuanLyNgayLaoDong.Areas.QuanLy.ViewModel.DiemDanhViewModel>
+
+@{
+    ViewBag.Title = "Danh sách điểm danh theo ngày";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+    var ngay = ViewBag.Ngay as DateTime?;
+
+    var successMessage = TempData["Success"] as string;
+
+
+}
+
+<h2>Danh sách sinh viên đã điểm danh ngày @(ngay.HasValue ? ngay.Value.ToString("dd/MM/yyyy") : "")</h2>
+
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>MSSV</th>
+                <th>Họ tên</th>
+                <th>Lớp</th>
+                <th>Thời gian điểm danh</th>
+                <th>Giá trị</th> <!-- ✅ -->
+                <th>Khu vực</th> <!-- ✅ -->
+                <th>Đợt ID</th> <!-- ✅ -->
+                <th>Trạng thái</th> <!-- ✅ thêm -->
+                @*<th>Mã điểm danh</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MSSV</td>
+                    <td>@item.HoTen</td>
+                    <td>@item.Lop</td>
+                    <td>@item.ThoiGianDiemDanh.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>@(item.GiaTri ?? 0) ngày</td> <!-- ✅ -->
+                    <td>@item.KhuVuc</td> <!-- ✅ -->
+                    <td>@item.DotLaoDongId</td> <!-- ✅ -->
+                    <td class="trangthai">Chưa xác nhận</td> <!-- ✅ thêm -->
+                    @*<td>@item.MaDiemDanh</td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Không có dữ liệu điểm danh phù hợp.</p>
+}
+
+@using (Html.BeginForm("XacNhanSoNgayLaoDong", "TaoDiemDanh", FormMethod.Post))
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        <input type="hidden" name="danhSach[@i].MSSV" value="@Model[i].MSSV" />
+        <input type="hidden" name="danhSach[@i].DotLaoDongId" value="@Model[i].DotLaoDongId" />
+        <input type="hidden" name="danhSach[@i].HoTen" value="@Model[i].HoTen" />
+        <input type="hidden" name="danhSach[@i].Lop" value="@Model[i].Lop" />
+        <input type="checkbox" name="danhSach[@i].DuocXacNhan" value="true" checked hidden />
+    }
+
+    <button id="btnXacNhan" type="submit" class="btn btn-success">Xác nhận hoàn thành toàn bộ</button>
+   
+}
+
+

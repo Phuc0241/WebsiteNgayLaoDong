@@ -1,0 +1,88 @@
+﻿@model QuanLyNgayLaoDong.Areas.QuanLy.ViewModel.DiemDanhLocViewModel
+
+@{
+    ViewBag.Title = "Lọc điểm danh theo ngày";
+    Layout = "~/Areas/QuanLy/Views/Shared/_LayoutQuanLyTaoDiemDanh.cshtml";
+    var danhSachDot = ViewBag.DanhSachDot as List<QuanLyNgayLaoDong.Models.TaoDotNgayLaoDong>;
+}
+
+<h2>Lọc danh sách điểm danh</h2>
+
+@using (Html.BeginForm("LocDiemDanhTheoNgay", "TaoDiemDanh", FormMethod.Post))
+{
+    <div class="row g-3 mb-4">
+        <div class="col-auto">
+            <label>Ngày:</label>
+            @Html.TextBoxFor(m => m.Ngay, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+        </div>
+        <div class="col-auto">
+            <label>Đợt lao động:</label>
+            <select name="DotLaoDong" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var item in danhSachDot.Select(x => x.DotLaoDong).Distinct())
+                {
+                    if (!string.IsNullOrEmpty(item))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label>Loại lao động:</label>
+            <select name="LoaiLaoDong" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var item in danhSachDot.Select(x => x.LoaiLaoDong).Distinct())
+                {
+                    if (!string.IsNullOrEmpty(item))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label>Mô tả:</label>
+            <select name="MoTa" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var item in danhSachDot.Select(x => x.KhuVuc).Distinct())
+                {
+                    if (!string.IsNullOrEmpty(item))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label>Buổi:</label>
+            <select name="Buoi" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var item in danhSachDot.Select(x => x.Buoi).Distinct())
+                {
+                    if (!string.IsNullOrEmpty(item))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label>Số ngày lao động (Giá trị):</label>
+            <select name="GiaTri" class="form-select">
+                <option value="">-- Tất cả --</option>
+                @foreach (var item in danhSachDot.Select(x => x.GiaTri).Distinct())
+                {
+                    if (item.HasValue)
+                    {
+                        <option value="@item">@item ngày</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">Xem danh sách</button>
+        </div>
+    </div>
+}

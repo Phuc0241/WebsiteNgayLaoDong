@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/trangchu/CSS/SinhVien.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="~/Areas/Admin/Javascript/AdminshareJavaScript.js"></script>
+    <link rel="stylesheet" href="@Url.Content("~/Content/Admin/css/layout.css")">
+    <title>@ViewBag.Title</title>
+
+
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-content">
+            <a href="@Url.Action("Index", "TrangChuLopTruong", new {area = "LopTruong"})">
+                <img src="~/Content/trangchu/images/imageLayout/LogoTruong.png" alt="Logo" class="logo">
+            </a>
+            <div class="nav-content-text">Sinh Viên</div>
+            <div class="user-menu" id="userMenu">
+                @{ Html.RenderAction("ThongTinDangNhap", "InfoLayout", new { area = "SinhVien" }); }
+                <i class="fa fa-caret-down"></i>
+                <ul class="dropdown-menu" id="dropdownMenu">
+                    <li><a class="a-color" href="@Url.Action("TrangThongTinLopTruong", "TrangChuLopTruong", new {area = "LopTruong"})">Thông tin cá nhân</a></li>
+                    <li><a class="a-color" href="javascript:void(0);" onclick="openModal()">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i> Menu
+                </button>
+                <div class="box-container-menu" id="menu">
+                    <a href="@Url.Action("Index", "TrangChuLopTruong", new {area = "LopTruong"})"><i class="fa fa-home"></i> Trang chủ</a>
+                    <a href="@Url.Action("PhieuDangKy", "TrangChuLopTruong")"><i class="fa-regular fa-calendar-plus"></i> Đăng Ký Lao Động</a>
+                    <a href="@Url.Action("ThongKe", "TrangChuLopTruong")"><i class="fa fa-bar-chart"></i> Thống kê</a>
+                    <a href="@Url.Action("LichLaoDong", "TrangChuLopTruong")"><i class="fa fa-calendar"></i> Lịch Lao Động</a>
+                    <a href="@Url.Action("DiemDanh", "TrangChuLopTruong")"><i class="fa fa-check-circle"></i> Điểm danh lao động</a>
+                    <a href="@Url.Action("ThongBao", "TrangChuLopTruong")"><i class="fas fa-bell"></i> Thông báo</a>
+                </div>
+            </div>
+
+            <!-- Nội dung chính của View con -->
+            <div class="col-md-9">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            var button = document.querySelector(".menu-toggle i");
+
+            if (menu.style.maxHeight === "0px" || menu.style.maxHeight === "") {
+                menu.style.maxHeight = "500px";
+                button.classList.remove("fa-bars");
+                button.classList.add("fa-times");
+            } else {
+                menu.style.maxHeight = "0px";
+                button.classList.remove("fa-times");
+                button.classList.add("fa-bars");
+            }
+        }
+
+        document.getElementById('userMenu')?.addEventListener('click', function (event) {
+            event.stopPropagation();
+            document.getElementById('dropdownMenu')?.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!document.getElementById('userMenu')?.contains(event.target)) {
+                document.getElementById('dropdownMenu')?.classList.remove('show');
+            }
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-text">
+                <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                <div class="modal-buttons">
+                    <!-- Truyền URL từ Razor vào attribute -->
+                    <button class="btn-xoa" onclick="window.location.href='@Url.Action("Login", "Login", new { area = "" })'">Có</button>
+                    <button class="btn-huy" onclick="closeModal()">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openModal() {
+            document.getElementById("confirmationModal").style.display = "block";
+        }
+        function openModal() {
+            document.getElementById("confirmationModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("confirmationModal").style.display = "none";
+        }
+
+        // Bấm ra ngoài thì đóng modal
+        window.onclick = function (event) {
+            var modal = document.getElementById("confirmationModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
+</body>
+</html>

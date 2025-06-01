@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Trang Thông Tin Lớp Trưởng";
+    Layout = "~/Areas/LopTruong/Views/Shared/_LayoutLopTruong.cshtml";
+}
+
+<div class="info-card">
+    <h2 class="title">Thông tin tài khoản</h2>
+    <div class="profile-img-container">
+        <img src="@Url.Content(Model.AnhDaiDien)" alt="Ảnh đại diện" class="profile-img">
+        <div class="overlay">Thay đổi ảnh</div>
+    </div>
+
+    <div class="info">
+        <p><strong>MSSV:</strong> @Model.MSSV</p>
+        <p><strong>Họ và tên:</strong> @Model.HoTen</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Ngày sinh:</strong> @Model.NgaySinh</p>
+        <p><strong>Giới tính:</strong> @Model.GioiTinh</p>
+        <p><strong>Địa chỉ:</strong> @Model.DiaChi</p>
+        <p><strong>Số điện thoại:</strong> @Model.SoDienThoai</p>
+        <p><strong>Vai trò:</strong> @Model.VaiTro</p>
+    </div>
+    <button class="btn btn-primary">Chỉnh sửa thông tin</button>
+</div>

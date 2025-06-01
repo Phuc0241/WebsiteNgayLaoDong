@@ -1,0 +1,172 @@
+﻿/* Reset default margins and set white background for the entire page */
+body {
+    background-color: #ffffff;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Ensure the main container has a white background and subtle shadow */
+.container.mt-4 {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the heading */
+h2.text-center.mb-4 {
+    color: #1100ff;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* Style the table */
+#duyetTable {
+    background-color: #ffffff;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    #duyetTable th,
+    #duyetTable td {
+        vertical-align: middle;
+        padding: 12px;
+    }
+
+    #duyetTable thead th {
+        background-color: #343a40;
+        color: #ffffff;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    #duyetTable tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    #duyetTable .badge {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+/* Style buttons */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.btn-info, .btn-primary, .btn-success, .btn-warning {
+    transition: background-color 0.3s ease;
+}
+
+    .btn-info:hover {
+        background-color: #138496;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+/* Style filter and search inputs */
+.form-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.form-control, .form-select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1100ff;
+        box-shadow: 0 0 5px rgba(17, 0, 255, 0.2);
+    }
+
+/* Style pagination */
+.pagination .page-link {
+    color: #1100ff;
+    border: 1px solid #dee2e6;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1100ff;
+    border-color: #1100ff;
+    color: #ffffff;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+}
+
+/* Style modals */
+.modal-content {
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #1100ff;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Ensure alerts have a clean look */
+.alert {
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container.mt-4 {
+        padding: 15px;
+    }
+
+    #duyetTable th,
+    #duyetTable td {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+
+    h2.text-center.mb-4 {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "Trang thống kê";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2 class="text-center mt-4 mb-4">THỐNG KÊ TỔNG QUAN</h2>
+
+<div class="row text-center mb-5">
+    <div class="col-md-4">
+        <div class="card shadow p-4">
+            <h5>Tổng số sinh viên</h5>
+            <h2 id="soSinhVien">--</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow p-4">
+            <h5>Số đợt lao động</h5>
+            <h2 id="soDotLaoDong">--</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow p-4">
+            <h5>Tổng số tài khoản</h5>
+            <h2 id="soTaiKhoan">--</h2>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <div style="max-width: 600px; margin: auto;">
+        <canvas id="bieuDoThongKe"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('bieuDoThongKe').getContext('2d');
+    const bieuDo = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Sinh viên', 'Đợt lao động', 'Tài khoản'],
+            datasets: [{
+                label: 'Số lượng',
+                data: [0, 0, 0],
+                backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e'],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Biểu đồ thống kê'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 5 }
+                }
+            }
+        }
+    });
+
+    async function capNhatThongKe() {
+        try {
+            const response = await fetch('@Url.Action("GetThongKe", "ThongKe", new { area = "Admin" })');
+            const data = await response.json();
+
+            // Cập nhật text
+            document.getElementById("soSinhVien").textContent = data.tongSinhVien;
+            document.getElementById("soDotLaoDong").textContent = data.tongDotLaoDong;
+            document.getElementById("soTaiKhoan").textContent = data.tongTaiKhoan;
+
+            // Cập nhật biểu đồ
+            bieuDo.data.datasets[0].data = [
+                data.tongSinhVien,
+                data.tongDotLaoDong,
+                data.tongTaiKhoan
+            ];
+            bieuDo.update();
+        } catch (err) {
+            console.error("Lỗi khi tải thống kê:", err);
+        }
+    }
+
+    // Tải lần đầu và cập nhật mỗi 30 giây
+    capNhatThongKe();
+    setInterval(capNhatThongKe, 30000);
+</script>
+
+<style>
+
+    .container-fluid.py-4 {
+        background-color: white;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 10px;
+        border: none;
+    }
+
+    h2 {
+        font-size: 36px;
+        color: #007bff;
+        margin-top: 10px;
+    }
+</style>

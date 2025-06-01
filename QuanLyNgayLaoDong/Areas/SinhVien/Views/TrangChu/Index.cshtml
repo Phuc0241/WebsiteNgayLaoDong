@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Sinh Viên</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/trangchu/CSS/SinhVien.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/sinhvien/CSS/ChangePassword.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/sinhvien/CSS/LayoutSinhVien.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/Admin/css/layout.css")" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <!-- JS -->
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Areas/Admin/Javascript/AdminshareJavaScript.js")"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-content">
+            <a href="@Url.Action("TrangChu", "TrangChu")">
+                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/LogoTruong.png")" alt="Logo" class="logo">
+            </a>
+            <div class="nav-content-text">Sinh Viên</div>
+            <div class="user-menu" id="userMenu">
+                <img src="@Url.Content(Model.AnhDaiDien)" alt="User Avatar" class="user-avatar" />
+                <label class="user-name">@Model.HoTen</label>
+                <i class="fa fa-caret-down"></i>
+                <ul class="dropdown-menu" id="dropdownMenu">
+                    <li><a class="a-color" href="@Url.Action("TrangThongTinSinhVien", "TrangChu")">Thông tin cá nhân</a></li>
+                    <li><a href="javascript:void(0);" class="a-color" onclick="openChangePasswordModal()">Đổi mật khẩu</a></li>
+                    <li><a href="javascript:void(0);" class="a-color" onclick="openConfirmationModal()">Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Thông tin sinh viên -->
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 mb-4">
+                    <h4 class="text-danger fw-bold">Thông Tin Sinh Viên</h4>
+                    <div class="text-center">
+                        <img src="@Url.Content(Model.AnhDaiDien)" class="img-fluid rounded-circle" width="120" alt="Avatar" />
+                        <div class="mt-2">
+                            <a href="@Url.Action("TrangThongTinSinhVien", "TrangChu")" class="text-primary">Xem chi tiết</a>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item"><strong>MSQL:</strong> @Model.MSSV</li>
+                        <li class="list-group-item"><strong>Họ và Tên:</strong> @Model.HoTen</li>
+                        <li class="list-group-item"><strong>Giới tính:</strong> @Model.GioiTinh</li>
+                        <li class="list-group-item"><strong>Email:</strong> @Model.Email</li>
+                        <li class="list-group-item"><strong>Vai trò:</strong> @Model.VaiTro</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Các chức năng -->
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="@Url.Action("PhieuDangKy", "TrangChu")" class="text-decoration-none">
+                            <div class="card shadow-sm text-center p-3 text-white mb-4">
+                                <h6 class="Text-h6">Đăng Ký Lao Động</h6>
+                                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/Create.png")" class="img-Laodong" width="120" />
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("ThongKe", "TrangChu")" class="text-decoration-none">
+                            <div class="card shadow-sm text-center p-3 text-white mb-4">
+                                <h6 class="Text-h6">Thống Kê</h6>
+                                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/Thongke.png")" class="img-Laodong" width="120" />
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("LichLaoDong", "TrangChu")" class="text-decoration-none">
+                            <div class="card shadow-sm text-center p-3 text-white mb-4">
+                                <h6 class="Text-h6">Lịch Lao Động</h6>
+                                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/icons8-calendar.gif")" class="img-Laodong" width="120" />
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="@Url.Action("DiemDanh", "TrangChu")" class="text-decoration-none">
+                            <div class="card shadow-sm text-center p-3 mb-4">
+                                <h6>Điểm Danh Lao Động</h6>
+                                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/Duyet1.png")" class="img-Laodong" width="120" />
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="@Url.Action("ThongBao", "TrangChu")" class="text-decoration-none">
+                            <div class="card shadow-sm text-center p-3 mb-4">
+                                <h6>Thông Báo</h6>
+                                <img src="@Url.Content("~/Content/trangchu/images/imageLayout/icons8-bell.gif")" class="img-Laodong" width="120" />
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal đổi mật khẩu -->
+    <!-- Modal đổi mật khẩu -->
+    <div id="changePasswordModal" class="modal" style="display:none; justify-content:center; align-items:center;">
+        <div class="modal-content" style="width: 400px; background:white; border-radius: 10px; padding: 20px;outline:none;border:none">
+            <div class="modal-text">
+                <h4 style=" text-align:center">Đổi mật khẩu</h4>
+                <form id="changePasswordForm" method="post">
+                    @Html.AntiForgeryToken() <!-- THÊM token ở đây -->
+
+                    <div class="mb-3">
+                        <label for="CurrentPassword">Mật khẩu hiện tại<span style="color:orangered">*</span></label>
+                        <input type="password" class="form-inputPass" id="CurrentPassword" name="CurrentPassword" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="NewPassword">Mật khẩu mới<span style="color:orangered">*</span></label>
+                        <input type="password" class="form-inputPass" id="NewPassword" name="NewPassword" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="ConfirmPassword">Xác nhận mật khẩu mới<span style="color:orangered">*</span></label>
+                        <input type="password" class="form-inputPass" id="ConfirmPassword" name="ConfirmPassword" required />
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <button type="submit" class="btnDoiMK">Đổi mật khẩu</button>
+                        <button style="background-color: #ebedef;margin-left:10px;color:black" type="button" class="btnDoiMK" onclick="closeChangePasswordModal()">Hủy</button>
+                    </div>
+
+
+                </form>
+                <div id="changePasswordMessage" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal xác nhận đăng xuất -->
+    <div id="confirmationModal" class="modal" style="display:none; justify-content:center; align-items:center;">
+        <div class="modal-content" style="width: 400px; background:white; border-radius: 10px; padding: 20px;">
+            <div class="modal-text text-center">
+                <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                <div class="modal-buttons mt-3">
+                    <button class="btn-xoa" onclick="window.location.href='@Url.Action("Login", "Login", new { area = "" })'">Có</button>
+                    <button class="btn-huy" onclick="closeConfirmationModal()">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript xử lý modal -->
+    <script>
+        const userMenu = document.getElementById("userMenu");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        userMenu.addEventListener("click", function (e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!userMenu.contains(e.target)) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+
+        function openChangePasswordModal() {
+            document.getElementById("changePasswordModal").style.display = "flex";
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById("changePasswordModal").style.display = "none";
+            // Reset form
+            document.getElementById("changePasswordForm").reset();
+
+            // Xóa thông báo (nếu có)
+            document.getElementById("changePasswordMessage").innerHTML = "";
+        }
+
+        function openConfirmationModal() {
+            document.getElementById("confirmationModal").style.display = "flex";
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById("confirmationModal").style.display = "none";
+        }
+
+        window.addEventListener("click", function (event) {
+            const changeModal = document.getElementById("changePasswordModal");
+            const confirmModal = document.getElementById("confirmationModal");
+            if (event.target === changeModal) closeChangePasswordModal();
+            if (event.target === confirmModal) closeConfirmationModal();
+        });
+         // Gửi AJAX đổi mật khẩu
+            $(document).ready(function () {
+                $("#changePasswordForm").submit(function (e) {
+                    e.preventDefault();
+
+                    var form = $(this);
+                    var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("ChangePassword", "TrangChu")',
+                        data: form.serialize(),
+                        headers: {
+                            'RequestVerificationToken': token
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $("#changePasswordMessage").html('<span style="color:green;">' + response.message + '</span>');
+                                setTimeout(() => {
+                                    closeChangePasswordModal();
+                                }, 2000);
+                            } else {
+                                $("#changePasswordMessage").html('<span style="color:red;">' + response.message + '</span>');
+                            }
+                        },
+                        error: function () {
+                            $("#changePasswordMessage").html('<span style="color:red;">Lỗi kết nối máy chủ.</span>');
+                        }
+                    });
+                });
+            });
+
+    </script>
+</body>
+</html>

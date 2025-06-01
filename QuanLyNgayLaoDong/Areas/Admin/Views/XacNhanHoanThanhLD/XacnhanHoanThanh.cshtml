@@ -1,0 +1,563 @@
+﻿@using QuanLyNgayLaoDong.Models
+@model IEnumerable<SoNgayLaoDong>
+@{
+    ViewBag.Title = "XacNhanHoanThanh";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+
+    .container-custom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+    }
+
+    .title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .subtitle {
+        font-size: 1.25rem;
+        color: #4b5563;
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .highlight {
+        font-weight: 600;
+        color: #4f46e5;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    /* --- Alert Styles --- */
+    .alert {
+        position: relative; /* Essential for positioning close button */
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        display: flex; /* Use flexbox for alignment */
+        align-items: center;
+        justify-content: center;
+        gap: 1rem; /* Space between text and button */
+    }
+
+    .alert-info {
+        background: #e0f2fe;
+        border-left: 4px solid #0284c7;
+        color: #0369a1;
+    }
+
+    .alert-success {
+        background: #dcfce7;
+        border-left: 4px solid #16a34a;
+        color: #15803d;
+    }
+
+    .alert-danger { /* Changed from .alert for consistency with common naming */
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+        color: #b91c1c;
+    }
+
+    .close-alert-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0; /* Remove default padding */
+        position: absolute; /* Position absolutely within the alert */
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%); /* Vertically center */
+    }
+
+    .alert-success .close-alert-btn {
+        color: #15803d;
+    }
+
+    .alert-danger .close-alert-btn {
+        color: #b91c1c;
+    }
+
+    .alert-info .close-alert-btn {
+        color: #0369a1;
+    }
+
+    .close-alert-btn:hover {
+        opacity: 0.7;
+    }
+
+    /* --- Table Styles --- */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+    }
+
+        .table th {
+            background: #eef2ff;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none; /* No border for the last row's cells */
+        }
+
+        .table tr:hover {
+            background: #eef2ff;
+            transition: background 0.2s ease-in-out;
+        }
+
+    /* --- Status Badge Styles --- */
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-unconfirmed {
+        background: #fef9c3;
+        color: #854d0e;
+    }
+
+    .status-pending {
+        background: #ffedd5;
+        color: #c2410c;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    /* --- Button Styles --- */
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        color: white;
+        font-size: 0.875rem;
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+        border: none; /* Ensure no default button border */
+    }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+
+    .btn-confirm {
+        background: #4f46e5;
+    }
+
+        .btn-confirm:hover {
+            background: #4338ca;
+        }
+
+    .btn-complete { /* Not explicitly used in the current table buttons, but good to keep if needed */
+        background: #16a34a;
+    }
+
+        .btn-complete:hover {
+            background: #15803d;
+        }
+
+    /* --- Modal Styles --- */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-body {
+        margin-bottom: 1.5rem;
+    }
+
+        .modal-body p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .modal-body strong {
+            color: #1f2937; /* Stronger color for labels */
+        }
+
+        .modal-body select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-cancel {
+        background: #6b7280;
+    }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
+
+    .btn-ok {
+        background: #16a34a;
+    }
+
+        .btn-ok:hover {
+            background: #15803d;
+        }
+</style>
+
+<div class="container-custom">
+    <h1 class="title">Xác Nhận Hoàn Thành Lao Động</h1>
+    <p class="subtitle">Tổng số ngày lao động cần đạt: <span class="highlight">18 ngày</span></p>
+
+    <div class="card">
+        @* Display messages from TempData or ViewBag *@
+        @if (ViewBag.NoStudentsMessage != null)
+        {
+            <div class="alert alert-info" id="info-alert">
+                <p>@ViewBag.NoStudentsMessage</p>
+                <button type="button" class="close-alert-btn" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success" id="success-alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close-alert-btn" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" id="error-alert">
+                @* Changed class to alert-danger *@
+                @TempData["ErrorMessage"]
+                <button type="button" class="close-alert-btn" aria-label="Đóng">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        @* Display the table if there are students, otherwise show a default message *@
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>MSSV</th>
+                            <th>Họ và Tên</th>
+                            <th>Lớp</th>
+                            <th>Khoa</th>
+                            <th>Tổng Số Ngày LD</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int stt = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr data-id="@item.id">
+                                    <td style="text-align:center">@stt</td>
+                                    <td style="text-align:center">@(item.SinhVien?.MSSV.ToString() ?? "N/A")</td>
+                                    <td style="text-align:center">@(item.SinhVien?.hoten ?? "N/A")</td>
+                                    <td style="text-align:center">@(item.SinhVien?.Lop?.ten_lop ?? "N/A")</td>
+                                    <td style="text-align:center">@(item.SinhVien?.Lop?.Khoa?.ten_khoa ?? "N/A")</td">
+                                    <td style="text-align:center">@(item.TongSoNgay?.ToString() ?? "0")</td>
+                                    <td style="text-align:center">
+                                        @{
+                                            string statusClass = "";
+                                            string statusText = "";
+                                            if (item.Ma_phieu_xac_nhan == null && item.PhieuXacNhanHoanThanh == null)
+                                            {
+                                                statusClass = "status-unconfirmed";
+                                                statusText = "Chưa Xác Nhận";
+                                            }
+                                            else
+                                            {
+                                                switch (item.PhieuXacNhanHoanThanh?.trang_thai)
+                                                {
+                                                    case "Chờ Xác Nhận":
+                                                        statusClass = "status-pending";
+                                                        statusText = "Chờ Xác Nhận";
+                                                        break;
+                                                    case "Hoàn Thành":
+                                                        statusClass = "status-completed";
+                                                        statusText = "Hoàn Thành";
+                                                        break;
+                                                    case "Chưa Hoàn Thành":
+                                                        statusClass = "status-unconfirmed"; /* Assuming unconfirmed for incomplete */
+                                                        statusText = "Chưa Hoàn Thành";
+                                                        break;
+                                                    default:
+                                                        statusClass = "status-unconfirmed";
+                                                        statusText = "Chưa Xác Nhận";
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                        <span class="status-badge @statusClass">@statusText</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-confirm" data-action="confirm" data-id="@item.id">Xác Nhận</button>
+                                    </td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                    </tbody>
+                </table>
+                <div id="pagination" style="text-align:center; margin-top: 1.5rem;">
+                    @* Pagination links would go here if you implement server-side pagination *@
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <p>Không có sinh viên nào cần xác nhận hoàn thành lao động.</p>
+            </div>
+        }
+    </div>
+</div>
+
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">Xác Nhận Trạng Thái Lao Động</div>
+        <div class="modal-body">
+            <p><strong>MSSV:</strong> <span id="modal-mssv"></span></p>
+            <p><strong>Họ và Tên:</strong> <span id="modal-hoten"></span></p>
+            <p><strong>Lớp:</strong> <span id="modal-lop"></span></p>
+            <p><strong>Khoa:</strong> <span id="modal-khoa"></span></p>
+            <p><strong>Tổng Số Ngày LD:</strong> <span id="modal-tongngay"></span></p>
+            <p><strong>Trạng Thái:</strong></p>
+            <select id="statusSelect" name="trang_thai">
+                <option value="Chờ Xác Nhận">Chờ Duyệt</option>
+                <option value="Hoàn Thành">Hoàn Thành</option>
+                <option value="Chưa Hoàn Thành">Chưa Hoàn Thành</option>
+            </select>
+        </div>
+        <input type="hidden" name="id" id="modal-id" />
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-cancel" id="cancelBtn">Hủy</button>
+            <button type="button" class="btn btn-ok" id="okBtn">OK</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Helper Function for Dismissible Alerts ---
+        // This function sets up any alert div with an ID and a close button.
+        // It will automatically hide after a set time and also on close button click.
+        function setupDismissibleAlert(alertId, duration = 3000) {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                // Set a timeout to hide the alert
+                setTimeout(() => {
+                    alertElement.style.display = 'none';
+                }, duration);
+
+                // Find and attach click listener to the close button
+                const closeButton = alertElement.querySelector('.close-alert-btn');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function () {
+                        alertElement.style.display = 'none';
+                    });
+                }
+            }
+        }
+
+        // --- Initialize All Alerts on Page Load ---
+        setupDismissibleAlert('success-alert'); // For success messages
+        setupDismissibleAlert('error-alert');   // For error messages
+        setupDismissibleAlert('info-alert');    // For informational messages (like "No Students")
+
+        // --- Confirmation Modal Elements ---
+        const confirmModal = document.getElementById('confirmModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const okBtn = document.getElementById('okBtn');
+        const statusSelect = document.getElementById('statusSelect');
+
+        // --- Attach Event Listeners to "Xác Nhận" Buttons ---
+        document.querySelectorAll('button[data-action="confirm"]').forEach(button => {
+            button.addEventListener('click', function () {
+                const row = this.closest('tr'); // Get the parent table row
+                const id = row.dataset.id;     // Get the student ID from data-id attribute
+
+                // Extract student data from the row cells, using optional chaining for safety
+                const mssv = row.children[1]?.innerText || "N/A";
+                const hoten = row.children[2]?.innerText || "N/A";
+                const lop = row.children[3]?.innerText || "N/A";
+                const khoa = row.children[4]?.innerText || "N/A";
+                const tongngay = row.children[5]?.innerText || "0";
+
+                // Get the current status text from the status badge
+                const currentStatusElement = row.children[6]?.querySelector('.status-badge');
+                const currentStatusText = currentStatusElement ? currentStatusElement.innerText.trim() : "";
+
+                // Populate the modal fields with student data
+                document.getElementById('modal-id').value = id;
+                document.getElementById('modal-mssv').innerText = mssv;
+                document.getElementById('modal-hoten').innerText = hoten;
+                document.getElementById('modal-lop').innerText = lop;
+                document.getElementById('modal-khoa').innerText = khoa;
+                document.getElementById('modal-tongngay').innerText = tongngay;
+
+                // Set the default selection in the status dropdown based on the current status
+                // This ensures the dropdown starts with the student's existing status
+                let defaultStatusOption = "Chờ Xác Nhận"; // Fallback default
+                if (currentStatusText === "Hoàn Thành") {
+                    defaultStatusOption = "Hoàn Thành";
+                } else if (currentStatusText === "Chưa Hoàn Thành") {
+                    defaultStatusOption = "Chưa Hoàn Thành";
+                }
+                statusSelect.value = defaultStatusOption;
+
+                // Display the confirmation modal
+                if (confirmModal) {
+                    confirmModal.style.display = 'flex';
+                }
+            });
+        });
+
+        // --- Handle "Hủy" Button Click in Modal ---
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                if (confirmModal) {
+                    confirmModal.style.display = 'none'; // Hide the modal
+                }
+            });
+        }
+
+        // --- Handle "OK" Button Click in Modal (Submit Status Update) ---
+        if (okBtn) {
+            okBtn.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent default form submission as we're using Fetch API
+
+                const studentId = document.getElementById('modal-id').value;
+                const newStatus = statusSelect.value; // Get the selected status from the dropdown
+
+                // Construct URL for the AJAX request
+                const updateUrl = `@Url.Action("UpdateStatus", "XacNhanHoanThanhLD", new { area = "Admin" })`;
+
+                // Perform the POST request using Fetch API
+                fetch(updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', // Specify charset
+                        'X-Requested-With': 'XMLHttpRequest' // Header to identify AJAX request on server
+                    },
+                    // Body for URL-encoded form data
+                    body: `id=${encodeURIComponent(studentId)}&trang_thai=${encodeURIComponent(newStatus)}`
+                })
+                .then(response => {
+                    // Check if the response indicates a redirection (common for MVC actions)
+                    if (response.redirected) {
+                        // If redirected, navigate to the new URL (which often carries TempData messages)
+                        window.location.href = response.url;
+                    } else if (response.ok) {
+                        // If the response is OK but not a redirect, assume success and reload page
+                        // This handles cases where the server sends a 200 OK without redirecting
+                        window.location.reload();
+                    } else {
+                        // Handle server errors (e.g., 400, 500 status codes)
+                        console.error('Server responded with an error:', response.status, response.statusText);
+                        // Reload anyway to show any error message from TempData
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    // Catch network errors or issues with the fetch operation itself
+                    console.error("Lỗi khi gửi yêu cầu cập nhật trạng thái:", error);
+                    // Optionally, display a generic error message if not reloading
+                    alert("Đã xảy ra lỗi kết nối. Vui lòng thử lại.");
+                })
+                .finally(() => {
+                    // Ensure the modal is hidden after the operation (success or failure)
+                    if (confirmModal) {
+                        confirmModal.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
